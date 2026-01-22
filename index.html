@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Spotify</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .player-container {
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 15px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0,0,0,0.7);
+  }
+
+  .current-song {
+    margin: 15px 0;
+    font-size: 1.2rem;
+    color: #1db954;
+  }
+
+  audio {
+    width: 100%;
+    margin: 15px 0;
+  }
+
+  .playlist ul {
+    list-style: none;
+    padding: 0;
+    max-height: 150px;
+    overflow-y: auto;
+  }
+
+  .playlist li {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .playlist li:hover {
+    background: #333;
+  }
+
+  .playlist li.active {
+    color: #1db954;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<div class="player-container">
+  <h1>🎵 My Mini Playlist</h1>
+  <div class="current-song"><span id="song-title">Select a song</span></div>
+  <audio id="audio" controls>Your browser does not support the audio element.</audio>
+  <div class="playlist">
+    <h2>Playlist</h2>
+    <ul id="playlist"></ul>
+  </div>
+</div>
+
+<script>
+const audio = document.getElementById("audio");
+const playlistEl = document.getElementById("playlist");
+const songTitle = document.getElementById("song-title");
+
+// Add your songs here. Make sure these files exist in a "songs" folder
+const songs = [
+  { name: "Song 1", file: "song1.mp3" },
+  { name: "Song 2", file: "song2.mp3" },
+  { name: "Song 3", file: "song3.mp3" }
+];
+
+let currentSong = 0;
+
+// Load playlist
+songs.forEach((song, index) => {
+  const li = document.createElement("li");
+  li.textContent = song.name;
+  li.addEventListener("click", () => playSong(index));
+  playlistEl.appendChild(li);
+});
+
+// Play selected song
+function playSong(index) {
+  currentSong = index;
+  audio.src = songs[index].file;
+  audio.load();
+  audio.play().catch(err => console.log("Playback error:", err));
+  songTitle.textContent = songs[index].name;
+  updateActiveSong();
+}
+
+// Highlight active song
+function updateActiveSong() {
+  const items = playlistEl.querySelectorAll("li");
+  items.forEach((item, i) => {
+    item.classList.toggle("active", i === currentSong);
+  });
+}
+
+// Auto next song
+audio.addEventListener("ended", () => {
+  currentSong++;
+  if (currentSong >= songs.length) currentSong = 0;
+  playSong(currentSong);
+});
+</script>
+
+</body>
+</html>
